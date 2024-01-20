@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+
+        select {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cryptography Application</h1>
+
+    <label for="text">Enter Text:</label><br>
+    <textarea id="text" placeholder="Enter plaintext or ciphertext"></textarea><br>
+
+    <label for="method">Select Cryptography Method:</label><br>
+    <select id="method">
+        <option value="caesar">Caesar Cipher</option>
+        <option value="monoalphabetic">Monoalphabetic Cipher</option>
+        <option value="polyalphabetic">Polyalphabetic Cipher</option>
+        <option value="railfence">Rail Fence Cipher</option>
+    </select><br>
+
+    <label for="key">Enter Key:</label><br>
+    <input type="text" id="key" placeholder="Enter key"><br>
+
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button><br>
+
+    <label for="result">Result:</label><br>
+    <textarea id="result" readonly></textarea>
+
+    <script>
+        function encrypt() {
+            var text = document.getElementById('text').value;
+            var method = document.getElementById('method').value;
+            var key = document.getElementById('key').value;
+            var result = '';
+
+            // Encryption logic based on the selected method
+            switch (method) {
+                case 'caesar':
+                    result = caesarCipherEncrypt(text, parseInt(key));
+                    break;
+                case 'monoalphabetic':
+                    result = monoalphabeticCipherEncrypt(text, key);
+                    break;
+                case 'polyalphabetic':
+                    result = polyalphabeticCipherEncrypt(text, key);
+                    break;
+                case 'railfence':
+                    result = railFenceCipherEncrypt(text, parseInt(key));
+                    break;
+            }
+
+            document.getElementById('result').value = result;
+        }
+
+        function decrypt() {
+            var text = document.getElementById('text').value;
+            var method = document.getElementById('method').value;
+            var key = document.getElementById('key').value;
+            var result = '';
+
+            // Decryption logic based on the selected method
+            switch (method) {
+                case 'caesar':
+                    result = caesarCipherDecrypt(text, parseInt(key));
+                    break;
+                case 'monoalphabetic':
+                    result = monoalphabeticCipherDecrypt(text, key);
+                    break;
+                case 'polyalphabetic':
+                    result = polyalphabeticCipherDecrypt(text, key);
+                    break;
+                case 'railfence':
+                    result = railFenceCipherDecrypt(text, parseInt(key));
+                    break;
+            }
+
+            document.getElementById('result').value = result;
+        }
+
+        // Add your implementation for each encryption and decryption function here
+
+        function caesarCipherEncrypt(text, key) {
+            let encryptedText = '';
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+
+                if (/[a-zA-Z]/.test(char)) {
+                    let isUpperCase = char === char.toUpperCase();
+                    let base = isUpperCase ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0);
+
+                    let encryptedChar = String.fromCharCode((char.charCodeAt(0) - base + key) % 26 + base);
+
+                    encryptedText += isUpperCase ? encryptedChar : encryptedChar.toLowerCase();
+                } else {
+                    encryptedText += char;
+                }
+            }
+            return encryptedText;
+        }
+
+        function caesarCipherDecrypt(text, key) {
+            let decryptedText = '';
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+
+                if (/[a-zA-Z]/.test(char)) {
+                    let isUpperCase = char === char.toUpperCase();
+                    let base = isUpperCase ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0);
+
+                    let decryptedChar = String.fromCharCode((char.charCodeAt(0) - base - key + 26) % 26 + base);
+
+                    decryptedText += isUpperCase ? decryptedChar : decryptedChar.toLowerCase();
+                } else {
+                    decryptedText += char;
+                }
+            }
+
+            return decryptedText;
+        }
+
+
+
+        function monoalphabeticCipherEncrypt(text) {
+            const key = {
+                'a': 'Q', 'b': 'W', 'c': 'E', 'd': 'R', 'e': 'T',
+                'f': 'Y', 'g': 'U', 'h': 'I', 'i': 'O', 'j': 'P',
+                'k': 'A', 'l': 'S', 'm': 'D', 'n': 'F', 'o': 'G',
+                'p': 'H', 'q': 'J', 'r': 'K', 's': 'L', 't': 'Z',
+                'u': 'X', 'v': 'C', 'w': 'V', 'x': 'B', 'y': 'N',
+                'z': 'M'
+            };
+
+            return text
+                .split('')
+                .map(char => key[char.toLowerCase()] || char)
+                .join('');
+            }
+
+        function monoalphabeticCipherDecrypt(text) {
+            const key = {
+                'q': 'a', 'w': 'b', 'e': 'c', 'r': 'd', 't': 'e',
+                'y': 'f', 'u': 'g', 'i': 'h', 'o': 'i', 'p': 'j',
+                'a': 'k', 's': 'l', 'd': 'm', 'f': 'n', 'g': 'o',
+                'h': 'p', 'j': 'q', 'k': 'r', 'l': 's', 'z': 't',
+                'x': 'u', 'c': 'v', 'v': 'w', 'b': 'x', 'n': 'y',
+                'm': 'z'
+            };
+
+            return text
+                .split('')
+                .map(char => key[char.toLowerCase()] || char)
+                .join('');
+            }
+        function polyalphabeticCipherEncrypt(text, key) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let encryptedText = '';
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i].toUpperCase();
+
+                if (/[A-Z]/.test(char)) {
+                    let keyIndex = i % key.length;
+                    let shift = alphabet.indexOf(key[keyIndex]);
+
+                    let charIndex = (alphabet.indexOf(char) + shift) % 26;
+                    let encryptedChar = alphabet[charIndex];
+
+                    encryptedText += text[i] === text[i].toLowerCase() ? encryptedChar.toLowerCase() : encryptedChar;
+                } else {
+                    encryptedText += char;
+                }
+            }
+
+            return encryptedText;
+        }
+
+        function polyalphabeticCipherDecrypt(text, key) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let decryptedText = '';
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i].toUpperCase();
+
+                if (/[A-Z]/.test(char)) {
+                    let keyIndex = i % key.length;
+                    let shift = alphabet.indexOf(key[keyIndex]);
+
+                    let charIndex = (alphabet.indexOf(char) - shift + 26) % 26;
+                    let decryptedChar = alphabet[charIndex];
+
+                    decryptedText += text[i] === text[i].toLowerCase() ? decryptedChar.toLowerCase() : decryptedChar;
+                } else {
+                    decryptedText += char;
+                }
+            }
+
+            return decryptedText;
+        }
+
+        function railFenceCipherEncrypt(text, key) {
+            if (key <= 1) {
+                return text; // No change if key is less than or equal to 1
+            }
+
+            let rows = key;
+            let cols = text.length;
+
+            let matrix = [];
+            for (let i = 0; i < rows; i++) {
+                matrix.push(Array(cols).fill(''));
+            }
+
+            let dir = -1;
+            let row = 0;
+            let col = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                if (row === 0 || row === rows - 1) {
+                    dir = -dir; // Change direction when reaching the top or bottom row
+                }
+
+                matrix[row][col] = text[i];
+                row += dir;
+                col++;
+            }
+
+            let encryptedText = '';
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (matrix[i][j] !== '') {
+                        encryptedText += matrix[i][j];
+                    }
+                }
+            }
+
+            return encryptedText;
+        }
+        
+        function railFenceCipherDecrypt(message, rails) {
+            var result = "";
+            var fence = [];
+            for (var i = 0; i < rails; i++) {
+                fence[i] = [];
+            }
+            
+            var rail = 0;
+            var direction = 1;
+            
+            for (var i = 0; i < message.length; i++) {
+                fence[rail].push(null);
+                rail += direction;
+                
+                if (rail === 0 || rail === rails - 1) {
+                    direction = -direction;
+                }
+            }
+            
+            var index = 0;
+            for (var i = 0; i < fence.length; i++) {
+                for (var j = 0; j < fence[i].length; j++) {
+                    fence[i][j] = message.charAt(index++);
+                }
+            }
+            
+            rail = 0;
+            direction = 1;
+            
+            for (var i = 0; i < message.length; i++) {
+                result += fence[rail].shift();
+                rail += direction;
+                
+                if (rail === 0 || rail === rails - 1) {
+                    direction = -direction;
+                }
+            }
+            
+            return result;
+        }
+
+
+    </script>
+</body>
+</html>
+
